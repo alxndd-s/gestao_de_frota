@@ -715,63 +715,6 @@ function listaplacas(){
 
 }
 
-function backup(){
-    
-    
-    firebase
-        .database()
-        .ref("veiculos/")
-        .orderByChild('placavei')
-        // .startAt("2023-01-01 00:00")
-        // .endAt("2023-01-31 23:59")
-        // .limitToLast(1)
-        .on("value", function (snapshot) {
-
-            
-            snapshot.forEach(function (item) {
-                
-                var key = item.key;
-                var childData = item.val();
-                let divmediasol = document.createElement('div');
-                divmediasol.className = "row";
-                divmediasol.id = "mediasol";
-
-                if (childData.placavei != "OPM8J51" && childData.placavei != "OQC0C33"){
-                    divmediasol.innerHTML = `
-                    <table id = 'tablemediasol'>
-                    
-                    <tr>                       
-                    <td id= "colplacavei" value="${childData.placavei}">${childData.placavei}</td>
-                    <td id= "colmediasol"><input type="text" id="vlmediasol" name="vlmediasol" value = "1,60"></td>
-                    <td id= "coltipovei" value = "RODOTREM">RODOTREM</td>
-                    <td id= "coldatareferencia"><input type="text" id="datarefer" name="datarefer" value = "01-02-2023"></td>
-                    </table>`   
-                    document.getElementById("listamediasol").append(divmediasol);
-                }else{
-
-
-                    divmediasol.innerHTML = `
-                    <table id = 'tablemediasol'>
-                    
-                    <tr>                       
-                    <td id= "colplacavei" value="${childData.placavei}">${childData.placavei}</td>
-                    <td id= "colmediasol"><input type="text" id="vlmediasol" name="vlmediasol" value = "1,90" style='background-color: #635151'</td>
-                    <td id= "coltipovei" style='background-color: #635151' value = "BI-CACAMBA<" >BI-CACAMBA</td>
-                    <td id= "coldatareferencia"><input type="text" id="datarefer" name="datarefer" value = "01-02-2023"></td>
-                    </table>`   
-                    document.getElementById("listamediasol").append(divmediasol);
-                }
-
-
-
-                
-
-            });
-                
-    });
-
-
-}
 
 function mediasolicitada(){
     let divmediasol = document.getElementById('listamediasol');
