@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>GDF - Cadastrar Veiculo</title>
+
+    <link rel="stylesheet" href="veiculos.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+
+<body onload="listarveiculos(),listaplacas()">
+    <div id = "barnavigation">
+        <ul>
+            <li><a href="abastecimento.html">Abastecimentos</a></li>
+            <li><a href="veiculos.html">Veiculos</a></li>
+            <li><a href="mediasolic.html">Média Solic.</a></li>
+        </ul>
+
+
+    </div>
+    <div class="container">
+        <div class="cadastro">
+            <h2 id = 'titcad'>Cadastro de Veiculo</h2>
+            <form action="#">
+                <div id="inputboxes">
+                    
+                    <label class = 'legendainput2'>Placa </label><input type="search" id="placavei" name="placavei" onchange="ultimokm()" list="listadeplacas">
+                    <label class = 'legendainput2'>Marca </label>
+                    <select name="marcavei" id="marcavei" onchange="criarselecao()">
+                        <option value=""></option>
+                        <option value="Daf">DAF</option>
+                        <option value="Mercedes">Mercedes</option>
+                        <option value="Volvo">Volvo</option>
+                    
+                    </select>
+                    <div id = 'selecaomodelo'></div> 
+                        <label class = 'legendainput2'>Modelo</label>
+                        <select name="modelovei" id="modelovei" ></select>    
+                            <option value=""></option>
+                    <!-- <label class = 'legendainput'>Modelo </label><input type="text" class="form-control" id="modelovei" placeholder="Modelo" name="modelovei" >  -->
+                    <label class = 'legendainput2'>Ano </label><input type="text" class="form-control" id="anovei" placeholder="Ano" name="anovei" > 
+                </div>
+                <p></p>
+                
+                <div id = 'kmanterior'></div>
+                <p></p>
+                <button type="button" onclick="cadastrarveiculo()" id="save_btn" class="btn btn-default">Cadastrar</button>
+                <!-- <button type="button" onclick="listarveiculos()" id="save_btn" class="btn btn-default">Listar Vei.</button> -->
+                
+            </form>
+        </div>
+        
+        <div class="col-sm-6">
+            <h2 style="text-align: center;">Veiculos</h2>
+            <div class="row">
+                <table id = 'cablistaveiculo'>
+                    <tr>
+                        <td id = "cabplacavei">Placa</td>
+                        <td id = "cabmarcavei">Marca</td>
+                        <td id = "cabmodelovei">Modelo</td>
+                        <td id = "cabanovei">Ano</td>
+                    </tr>
+                </table>
+            </div>
+            <div id="listaveiculos"></div>
+            <div id = 'listaplacas'></div>
+        </div>
+    </div>
+
+
+
+    <table></table>
+    
+    <script src="https://www.gstatic.com/firebasejs/7.17.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.17.1/firebase-database.js"></script>
+    <script script type="text/javascript" src="config.js">
+
+            
+                
+
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>GDF - Abastecimentos</title>
+
+    <link rel="stylesheet" href="abastecimento.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+
+<body onload = "listaplacas()">
+    
+    <div id = "barnavigation">
+        <ul>
+            <li><a href="abastecimento.html">Abastecimentos</a></li>
+            <li><a href="veiculos.html">Veiculos</a></li>
+            <li><a href="mediasolic.html">Média Solic.</a></li>
+        </ul>
+
+
+    </div>
+
+    <div class="container">
+        
+
+        
+        <div class="cadastro">
+            <h2 id = 'titcad'>Cadastro de abastecimento</h2>
+            
+            <form action="#" id = 'inputoriginal'>
+                <div id ="headinputboxes1"></div>
+                    <table id ="headinputboxes1">
+                        <tr id = 'trheadinputboxes1'>
+                            <td id = "box1">Data do abastecimento</td>
+                            <td id = "box2">Placa Veic.</td>
+                            <td id = "box3">Km Atual</td>
+                            <td id = "box4">Litros</td>
+                            <td id = "box5">Valor Total</td>
+                            <td id = "box6">Tipo</td>
+                            <td id = "box7">Km Anterior</td>
+                            <td id = "box8">Desc.KM</td>
+                         </tr>
+                    </table>
+
+                <div id="inputboxes">
+                    <table>
+                        <td id = "boxi1"><input type="date" class="inputdados" id="dataab"  name="dataab"> </td>
+                        <td id = "boxi2"><input type="time" class="inputdados" id="horaab"  name="horaab"></td>
+                        <td id = "boxi3"><input type="search" id="placavei" name="placavei" onchange="ultimokm(), listaabastdaplaca()" list="listadeplacas"> </td>
+                        <td id = "boxi4"><input type="number" class="inputdados" id="kmatual" placeholder="KM Atual" name="kmatual" ><div id = "testes"></td>
+                        
+                        <td id = "boxi5"><input type="number" class="inputdados" id="litrosabast" placeholder="Litros" name="litrosabast" onchange="mostrarmedia2()">  </td>
+                        <td id = "boxi6"><input type="number" class="inputdados" id="valorabastec" placeholder="Valor Tot." name="valorabast" onchange="mostrarmedia2()"> </td>
+                        
+                        <td id = "boxi7"><select name="tipoabast" id="tipoabast"><option value=""></option><option value="E">Externo</option><option value="I">Interno</option></select></td>
+                        <td id = "boxi8"><input type="text" name="inpkmanterior" id="inpkmanterior" placeholder="KM Ant." onchange="mostrarmedia2()"></td>    
+                        <td id = "boxi10"><input type="text" name="inpkmdescont" id="inpkmdescont" placeholder="KM.Desc." onchange="mostrarmedia2()"></td> 
+                    </table>    
+                </div>
+                <p></p>
+                <div id ='mostramedia2'></div>
+                <div id = 'kmanterior'></div>
+                
+                <p></p>
+                <div class="form-group" id ='botoescadelist'>
+                    <p></p>
+                    <p></p>
+                    <button type="button" onclick="cadastroabastecimento()" id="save_btn" class="btn btn-default">Cadastrar</button>
+                    <button type="button" onclick="listarabastecimentos()" id="save_btn" class="btn btn-default">Listar Todos</button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="col-sm-6">
+            <h2 style="text-align: center;">Lista de abastecimentos</h2>
+            <div class="row">
+                <table id = 'cablistaabast'>
+                    <tr>
+                        <td id = "cabdataabas">Data Abast</td>
+                        <td id = "cabplacavei">Placa</td>
+                        <td id = "cabkmanterior">KM Anterior</td>
+                        <td id = "cabkmatual">KM Atual</td>
+                        <td id = "cabkmrodado">KM Rod.</td>
+                        <td id = "cablitros">Litros</td>
+                        <td id = "cabvalorabastec">Valor Total</td>
+                        <td id = "cabmediaabas">Média</td>
+                        <td id = "cabmediamensal">M.M.</td>
+                        <td id = "cabtipoabast">Tipo</td>
+                        <td id = "cabmediamensal">KM Desc.</td>
+
+                    </tr>
+                </table>
+            </div>
+            <div id="listaabast"></div>
+            <div id = 'listaplacas'></div>
+        </div>
+    </div>
+
+
+
+    <table></table>
+    
+    <script src="https://www.gstatic.com/firebasejs/7.17.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.17.1/firebase-database.js"></script>
+    <script script type="text/javascript" src="config.js">
+
+            
+                
+
+
+    </script>
+</body>
+
+</html>

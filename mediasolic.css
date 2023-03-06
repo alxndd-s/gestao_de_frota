@@ -1,0 +1,195 @@
+
+div.container2 {
+    color: aliceblue;
+    border: 1px solid #606060;
+    border-radius: 10px;
+    background-color: rgb(44, 44, 44);
+}
+
+div.col-sm-6 {
+
+
+    border: 1px solid gray; 
+    border-radius: 8px;
+    border-spacing: 0px;
+
+
+}
+
+input#vlmediasol {
+    width: 35px; 
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    color: aliceblue;
+    border: 1px solid #606060;
+    text-align: center;
+    background-color: #424242;
+    
+    
+    
+    
+}
+
+input#media9eixo {
+    width: 75px; 
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    color: aliceblue;
+    border: 1px solid #606060;
+    text-align: center;
+    background-color: rgb(44, 44, 44);
+    
+}
+
+input#media7eixo {
+    width: 72px; 
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    color: aliceblue;
+    border: 1px solid #606060;
+    text-align: center;
+    background-color: rgb(44, 44, 44);
+
+
+}
+
+input#datarefer3 {
+    width: 72px; 
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    color: aliceblue;
+    border: 1px solid #606060;
+    text-align: center;
+    background-color: rgb(44, 44, 44);
+    
+}
+
+
+input#datarefer {
+    width: 70px; 
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    color: aliceblue;
+    border: 1px solid #606060;
+    text-align: center;
+    background-color: rgb(44, 44, 44);
+    
+    
+    
+    
+}
+
+body {
+
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size: small;
+    background-color: rgb(20, 20, 20);
+}
+
+td#colplacavei {
+    width: 75px;    
+    border: 1px solid #606060;
+    text-align: center;
+    
+}
+
+td#coltipovei {
+    width: 75px;
+    height: 20px;  
+    border: 1px solid #606060;
+    text-align: center;
+    
+}
+
+
+
+div.container {
+    color: aliceblue;
+    border: 1px solid #606060;
+    border-radius: 10px;
+    background-color: rgb(44, 44, 44);
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #00362d;
+    border-radius: 10px;
+  }
+  
+  li {
+    float: left;
+  }
+  
+  li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+  }
+  
+  /* Change the link color to #111 (black) on hover */
+  li a:hover {
+    background-color: #005a66;
+  }
+  
+
+td#cabplacavei {
+    background-color: black;
+    color: aliceblue;
+    width: 75px;    
+    border: 1px solid #606060;
+    text-align: center;
+
+}
+td#cabmedia {
+    background-color: black;
+    color: aliceblue;
+    width: 40px;    
+    border: 1px solid #606060;
+    text-align: center;
+
+}
+
+td#cabtipovei {
+    background-color: black;
+    color: aliceblue;
+    width: 75px;    
+    border: 1px solid #606060;
+    text-align: center;
+
+}
+
+td#cabdatarefer {
+    background-color: black;
+    color: aliceblue;
+    width: 72px;    
+    border: 1px solid #606060;
+    text-align: center;
+
+}
+
+td#cabmedia9eixos {
+    background-color: black;
+    color: aliceblue;
+    width: 75px;    
+    border: 1px solid #606060;
+    text-align: center;
+
+}
+
+td#cabmedia7eixos {
+    background-color: black;
+    color: aliceblue;
+    width: 75px;    
+    border: 1px solid #606060;
+    text-align: center;
+
+}
+
+td#cabdatarefer2 {
+    background-color: black;
+    color: aliceblue;
+    width: 75px;    
+    border: 1px solid #606060;
+    text-align: center;
+
+}
