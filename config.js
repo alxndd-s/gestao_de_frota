@@ -822,7 +822,7 @@ function cadastrarmediasbackup06032023(){
 }
 
 
-function cadastrarmedias(){
+function cadastrarmedias2(){
     
     var checkdatarefer = document.querySelector('input#datarefer3').value
     var table = document.querySelectorAll('td#colplacavei');
@@ -871,7 +871,27 @@ function cadastrarmedias(){
 }
         
 
+function cadastrarmedias() {
+    var checkdatarefer = document.querySelector('input#datarefer3').value;
+    var table = document.querySelectorAll('td#colplacavei');
 
+    let database = firebase.database();
+
+    let dataRetrieved = database.ref('mediasolicitada/').orderByChild("datarefer").equalTo(checkdatarefer);
+    dataRetrieved.once('value', function(snapshot) {
+        if (!snapshot.exists() || (snapshot.exists() && Object.values(snapshot.val()).every(child => child.valor !== '-NPsvsVypw8BH2wFS8cU'))) {
+            // não existe child com a mesma data ou todas as children existentes não possuem valor 'teste'
+            // pode efetuar o push
+
+            window.alert('Já Existe')
+                // ... adicione aqui outras propriedades que deseja armazenar
+            
+        } else {
+            // já existe child com a mesma data e com valor 'teste'
+            window.alert('nao existe')
+        }
+    });
+}
 
 
 function listaabastdaplaca(){
