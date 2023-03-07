@@ -185,10 +185,7 @@ function backuplistarabastecimentos(){
 
 function listarabastecimentos() {
 
-    var date = new Date();
-    var monthStartDay = new Date(date.getFullYear(), date.getMonth(), 1).getDate()
-    var monthEndDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()
-    console.log(monthStartDay , monthEndDay)
+
     
    
     
@@ -205,18 +202,19 @@ function listarabastecimentos() {
             document.getElementById("listaabast").innerHTML = "";
             snapshot.forEach(function (childSnapshot) {
 
-
+                
                 var key = childSnapshot.key;
                 var childData = childSnapshot.val();
                 let addDiv = document.createElement('div');
                 let datadoabast = childData.dataabast.slice(8, 10) + '/' + childData.dataabast.slice(5, 7) + '/' + childData.dataabast.slice(0, 4) + ' ' + childData.dataabast.slice(11, 13) + ':' + childData.dataabast.slice(14, 17);
                 var totalKmRodado = childData.kmatual-childData.kmanterior;
                 var placateste = childData.placavei
-                
+                var placa = childData.placavei
+                var mes = childData.dataabast.slice(5, 7) + '-' + childData.dataabast.slice(0, 4)
 
                 var totaldekm = 0;
                 var totaldelitros = 0;
-
+                
                 Promise.all([somaKmPorPlaca(placateste), somalitrosporplaca(placateste),somakmdescontado(placateste)])
                     .then(function([somakm, somalitros, somakmdesc]) {
                         totaldekm = somakm[childData.placavei];
@@ -228,7 +226,7 @@ function listarabastecimentos() {
                         addDiv.className = "row";
                         count++;
                         var sugestaokmant = 0
-
+                        
                         if (buscarKmAnterior(placa, data) == null) {
 
                             sugestaokmant = childData.kmanterior
@@ -242,33 +240,40 @@ function listarabastecimentos() {
                         
 
                         if ((sugestaokmant - childData.kmanterior) == 0 ){
+                            returnmediasolicitada(placa, mes)
+                            .then(function(mediasolplaca){
 
-                        
-                            addDiv.innerHTML = `
-                                <table id='tablelistaabast'>
-                                    <tr> 
-                                        <td class="coldataabas">${datadoabast}</td>        
-                                        <td id="${"placanum" + count}" value="${key}" class="colplacavei">${childData.placavei}</td> 
-                                        <td class="colkmanterior">${childData.kmanterior}</td> 
-                                        <td class="colkmatual">${childData.kmatual}</td>
-                                        <td class="colkmrodado">${totalKmRodado}</td>  
-                                        <td class="collitros">${childData.litros}</td>
-                                        <td class="colvalorabastec">R$ ${(Number(childData.valorabastec)).toFixed(2)}</td>
-                                        <td class="colmediaabastec">${(((childData.kmatual-childData.kmanterior-childData.kmdescontado))/(childData.litros-(childData.kmdescontado/5))).toFixed(2)}</td>                        
-                                        <td class="colmediamensal">${mediamensal1.toFixed(2)}</td>
-                                        <td class="coltipoabast">${childData.tipoabast}</td>
-                                        <td class="colmediamensal">${childData.kmdescontado}</td>
+
+                            
+                            
+                            
+                                addDiv.innerHTML = `
+                                    <table id='tablelistaabast'>
+                                        <tr> 
+                                            <td class="coldataabas">${datadoabast}</td>        
+                                            <td id="${"placanum" + count}" value="${key}" class="colplacavei">${childData.placavei}</td> 
+                                            <td class="colkmanterior">${childData.kmanterior}</td> 
+                                            <td class="colkmatual">${childData.kmatual}</td>
+                                            <td class="colkmrodado">${totalKmRodado}</td>  
+                                            <td class="collitros">${childData.litros}</td>
+                                            <td class="colvalorabastec">R$ ${(Number(childData.valorabastec)).toFixed(2)}</td>
+                                            <td class="colmediaabastec"> ${(((childData.kmatual-childData.kmanterior-childData.kmdescontado))/(childData.litros-(childData.kmdescontado/5))).toFixed(2)}</td>                        
+                                            <td class="colmediamensal">${mediamensal1.toFixed(2)}</td>
+                                            <td class="coltipoabast">${childData.tipoabast}</td>
+                                            <td class="colmediamensal">${childData.kmdescontado}</td>
+                                            <td class="colmediamensal">${mediasolplaca}</td>
+                                            
+                                            
                                         
-                                    
-            
-                                        <td>
-                                            <button type="button" class="btn btn-info" onclick="atualizardados(this)">Atualizar</button>
-                                            <button type="button" class="btn btn-danger" onclick="deleteData()">Deletar</button>
-                                        </td> 
-                                        
-                                    </tr>
-                                </table>`  
-                                
+                
+                                            <td>
+                                                <button type="button" class="btn btn-info" onclick="atualizardados(this)">Atualizar</button>
+                                                <button type="button" class="btn btn-danger" onclick="deleteData()">Deletar</button>
+                                            </td> 
+                                            
+                                        </tr>
+                                    </table>`  
+                            })  
                         }else{
 
                             addDiv.innerHTML = `
@@ -855,7 +860,7 @@ function cadastrarmedias2(){
                     .database()
                     .ref(`mediasolicitada/`)                    
                     .push(mediasolicitada);
-        }
+            }
     
     
         }
@@ -871,29 +876,71 @@ function cadastrarmedias2(){
 }
         
 
+
 function cadastrarmedias() {
+
     var checkdatarefer = document.querySelector('input#datarefer3').value;
     var table = document.querySelectorAll('td#colplacavei');
 
     let database = firebase.database();
 
-    let dataRetrieved = database.ref('mediasolicitada/').orderByChild("datarefer").equalTo(checkdatarefer);
+    let dataRetrieved = database.ref(`mediasolicitada/`);
     dataRetrieved.once('value', function(snapshot) {
-        if (!snapshot.exists() || (snapshot.exists() && Object.values(snapshot.val()).every(child => child.valor !== '-NPsvsVypw8BH2wFS8cU'))) {
-            // não existe child com a mesma data ou todas as children existentes não possuem valor 'teste'
-            // pode efetuar o push
-
-            window.alert('Já Existe')
-                // ... adicione aqui outras propriedades que deseja armazenar
+        
+        if (!snapshot.hasChild(checkdatarefer)) {
+            //irá verificar se não existe uma child com a data de referencia, se nao cadastra as medias
+            
+            for (var i = 0; i < table.length; i++) {
+                var inputs = table[i].innerHTML
+                var datareferencia = document.querySelectorAll('input#datarefer')[i].value
+                
+                const mediasolicitada = {
+        
+                    placavei: document.querySelectorAll('td#colplacavei')[i].innerHTML,
+                    mediasol: document.querySelectorAll('input#vlmediasol')[i].value,
+                    tipoveiculo: document.querySelectorAll('td#coltipovei')[i].innerHTML,
+                    datarefer: datareferencia,
+        
+                };
+                firebase
+            
+                    .database()
+                    .ref(`mediasolicitada/`)  
+                    .child(`${checkdatarefer}`)                  
+                    .push(mediasolicitada);
+            }
+            
+                
             
         } else {
-            // já existe child com a mesma data e com valor 'teste'
-            window.alert('nao existe')
+            window.alert(`[ERRO] - Média Solicitada da referência ${checkdatarefer} já cadastrada`)
+               
+
+            
         }
     });
 }
 
+function mostrardatarefer() {
 
+    // Obter a data atual
+    const dataAtual = new Date();
+
+    // Formatar a data para 'mm/yyyy'
+    const mes = (dataAtual.getMonth() + 1).toString().padStart(2, '0'); // adiciona um zero à esquerda se o mês for menor que 10
+    const ano = dataAtual.getFullYear().toString(); // pega os dois últimos dígitos do ano
+    const dataFormatada = `${mes}-${ano}`;
+
+    // Exibir a data no HTML
+    const dataAtualSpan = document.getElementById('datarefer3');
+    dataAtualSpan.value = dataFormatada;
+
+
+
+
+
+
+}
 function listaabastdaplaca(){
 
     var date = new Date();
@@ -1448,38 +1495,59 @@ function buscarKmAnterior(placa, data) {
   }
 
 
-function returnmediasolicitada(placa, mes) {
+function returnmediasolicitadabackup(placa, mes) {
 
-
+    var mediasolplaca = null
     
     firebase
-    .database()
-    .ref('abastecimentos')
-    .orderByChild('dataabast')
-    .endAt(data)
-    .once('value', function(snapshot) {
-      snapshot.forEach(function(childSnapshot) {
-        const mediasolicitada = childSnapshot.val();
+        .database()
+        .ref(`mediasolicitada/${mes}`)
+        
+        .once('value', function(snapshot) {
+        snapshot.forEach(function(childSnapshot) {
+            
+            const mediasolicitada = childSnapshot.val();
+            if (mediasolicitada.placavei == placa){
+                
+                mediasolplaca = mediasolicitada.mediasol
 
-       
-
-
-
-
-
-
-
-
+            }
 
 
         })
 
 
-
-
     })
-
-    
+    console.log(`Á media solic. da placa ${placa} do mês ${mes} é ${mediasolplaca}`)
+    return mediasolplaca
 
 
 }
+
+
+function returnmediasolicitada(placa, mes) {
+    return new Promise(function(resolve, reject) {
+      firebase
+        .database()
+        .ref(`mediasolicitada/${mes}`)
+        .once('value', function(snapshot) {
+          snapshot.forEach(function(childSnapshot) {
+            const mediasolicitada = childSnapshot.val();
+            if (mediasolicitada.placavei == placa) {
+              resolve(mediasolicitada.mediasol);
+              return;
+            }
+          });
+          resolve(null);
+        });
+    })
+      .then(function(mediasolplaca) {
+        console.log(`Á media solic. da placa ${placa} do mês ${mes} é ${mediasolplaca}`);
+        return mediasolplaca;
+      })
+      .catch(function(error) {
+        console.error(error);
+        return null;
+      });
+  }
+  
