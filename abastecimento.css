@@ -71,10 +71,44 @@ td.colmediaabastec {
     width: 34px;    
     border: 1px solid #606060;
     text-align: center;
+    color: rgb(3, 197, 90);
+    
+}
+
+td.colmediaabastecred {
+    width: 34px;    
+    border: 1px solid #606060;
+    text-align: center;
+    color: crimson;
     
 }
 
 td.colmediamensal {
+    width: 30px;    
+    border: 1px solid #606060;
+    text-align: center;
+    color: rgb(3, 197, 90);
+    
+}
+
+td.colmediasolicitada {
+    width: 30px;    
+    border: 1px solid #606060;
+    text-align: center;
+    
+    
+}
+
+
+td.colmediamensalred {
+    width: 30px;    
+    border: 1px solid #606060;
+    text-align: center;
+    color: crimson;
+    
+}
+
+td.colkmdescontado {
     width: 30px;    
     border: 1px solid #606060;
     text-align: center;

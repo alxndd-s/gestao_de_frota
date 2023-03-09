@@ -243,40 +243,54 @@ function listarabastecimentos() {
                             returnmediasolicitada(placa, mes)
                             .then(function(mediasolplaca){
 
+                                
+                                var mediadoabastec = (((childData.kmatual-childData.kmanterior-childData.kmdescontado))/(childData.litros-(childData.kmdescontado/5))).toFixed(2)
+                                var colmediaabastec = 'colmediaabastec'
+                                var colmediamensal = 'colmediamensal'
+                                if (mediadoabastec < Number(mediasolplaca)){
+                                    
+                                    var colmediaabastec = 'colmediaabastecred'
 
-                            
-                            
-                            
+                                }
+                                
+                                if (mediamensal1 < Number(mediasolplaca)){
+
+                                    var colmediamensal = 'colmediamensalred'
+
+                                }
                                 addDiv.innerHTML = `
-                                    <table id='tablelistaabast'>
-                                        <tr> 
-                                            <td class="coldataabas">${datadoabast}</td>        
-                                            <td id="${"placanum" + count}" value="${key}" class="colplacavei">${childData.placavei}</td> 
-                                            <td class="colkmanterior">${childData.kmanterior}</td> 
-                                            <td class="colkmatual">${childData.kmatual}</td>
-                                            <td class="colkmrodado">${totalKmRodado}</td>  
-                                            <td class="collitros">${childData.litros}</td>
-                                            <td class="colvalorabastec">R$ ${(Number(childData.valorabastec)).toFixed(2)}</td>
-                                            <td class="colmediaabastec"> ${(((childData.kmatual-childData.kmanterior-childData.kmdescontado))/(childData.litros-(childData.kmdescontado/5))).toFixed(2)}</td>                        
-                                            <td class="colmediamensal">${mediamensal1.toFixed(2)}</td>
-                                            <td class="coltipoabast">${childData.tipoabast}</td>
-                                            <td class="colmediamensal">${childData.kmdescontado}</td>
-                                            <td class="colmediamensal">${mediasolplaca}</td>
-                                            
-                                            
+                                <table id='tablelistaabast'>
+                                    <tr> 
+                                        <td class="coldataabas">${datadoabast}</td>        
+                                        <td id="${"placanum" + count}" value="${key}" class="colplacavei">${childData.placavei}</td> 
+                                        <td class="colkmanterior">${childData.kmanterior}</td> 
+                                        <td class="colkmatual">${childData.kmatual}</td>
+                                        <td class="colkmrodado">${totalKmRodado}</td>  
+                                        <td class="collitros">${(Number(childData.litros)).toFixed(2)}</td>
+                                        <td class="colvalorabastec">R$ ${(Number(childData.valorabastec)).toFixed(2)}</td>
+                                        <td class="${colmediaabastec}"> ${mediadoabastec}</td>                        
+                                        <td class="${colmediamensal}">${mediamensal1.toFixed(2)}</td>
+                                        <td class="colmediasolicitada">${mediasolplaca}</td>
+                                        <td class="coltipoabast">${childData.tipoabast}</td>
+                                        <td class="colkmdescontado">${childData.kmdescontado}</td>
                                         
-                
-                                            <td>
-                                                <button type="button" class="btn btn-info" onclick="atualizardados(this)">Atualizar</button>
-                                                <button type="button" class="btn btn-danger" onclick="deleteData()">Deletar</button>
-                                            </td> 
-                                            
-                                        </tr>
-                                    </table>`  
-                            })  
-                        }else{
+                                        
+                                        
+                                    
+            
+                                        <td>
+                                            <button type="button" class="btn btn-info" onclick="atualizardados(this)">Atualizar</button>
+                                            <button type="button" class="btn btn-danger" onclick="deleteData()">Deletar</button>
+                                        </td> 
+                                        
+                                    </tr>
+                                </table>`
 
-                            addDiv.innerHTML = `
+                                })  
+
+                            }else{
+
+                                addDiv.innerHTML = `
                                 <table id='tablelistaabast'>
                                 <tr style = 'background-color: lightpink;color: black;'>  
                                         <td class="coldataabas">${datadoabast}</td>        
@@ -286,10 +300,11 @@ function listarabastecimentos() {
                                         <td class="colkmrodado">${totalKmRodado}</td>  
                                         <td class="collitros">${childData.litros}</td>
                                         <td class="colvalorabastec">R$ ${(Number(childData.valorabastec)).toFixed(2)}</td>
-                                        <td class="colmediaabastec">${(((childData.kmatual-childData.kmanterior-childData.kmdescontado))/(childData.litros-(childData.kmdescontado/5))).toFixed(2)}</td>                        
-                                        <td class="colmediamensal">${mediamensal1.toFixed(2)}</td>
+                                        <td class="${coluna}">${mediadoabastec}</td>                        
+                                        <td class="${colmediamensal}">${mediamensal1.toFixed(2)}</td>
+                                        <td class="colmediasolicitada">${mediasolplaca}</td>
                                         <td class="coltipoabast">${childData.tipoabast}</td>
-                                        <td class="colmediamensal">${childData.kmdescontado}</td>
+                                        <td class="colkmdescontado">${childData.kmdescontado}</td>
                                         <td class="colsugestaokm">${sugestaokmant}</td>
                                         
                                     
@@ -300,10 +315,11 @@ function listarabastecimentos() {
                                         </td> 
                                         
                                     </tr>
-                                </table>`  
+                                </table>` 
 
 
-                        }        
+                            }    
+
                         document.getElementById("listaabast").appendChild(addDiv);
 
                     });
@@ -328,7 +344,7 @@ function ultimokm(){
         // .startAt("2023-01-01 00:00")
         // .endAt("2023-01-31 23:59")
         .equalTo(placavei2)
-        .limitToLast(1)
+        .limitToLast(10)
         
         .on("value", function (snapshot) {
             
