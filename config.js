@@ -25,32 +25,43 @@ var kmatualdig2 = 0
 
 function cadastroabastecimento() {
 
+    // funcao para cadastrar abastecimento
+
     var checkdataabast= document.getElementById("dataab").value + " " + document.getElementById("horaab").value
     var checkplacavei= document.getElementById("placavei").value.toUpperCase()
     var checkkmatual= document.getElementById("kmatual").value
     var checklitros= document.getElementById('litrosabast').value
     var checkvalorabast= document.getElementById('valorabastec').value
     var checktipoabast = document.getElementById('tipoabast').value
-    
+    console.log(checkdataabast, checkplacavei,checkkmatual,checklitros,checkvalorabast,checkvalorabast,checktipoabast)
+    // os campos acima vao pegar os valores digitados nos campos e fazer uma validação 
 
     
 
     litrosabast = checklitros
     kmatualdig2 = checkkmatual
-    ultimokm()
+
+    lanca_ult_km = ultimokm()
+
     media_abast_atual = (checkkmatual-Number(lanca_ult_km))/checklitros
+    console.log('lanca_ult_km' + lanca_ult_km)
+    console.log(media_abast_atual)
+
 
     
 
 
     
-    if (lanca_ult_km == 0){
+    if (lanca_ult_km == 0 || lanca_ult_km == undefined){
+        // se o km anterior do veiculo for '0' voce tera que inserior o primeiro manuamente
         lanca_ult_km = document.getElementById('inpkmanterior').value
         
         media_abast_atual = (checkkmatual-Number(lanca_ult_km))/checklitros
 
     }
 
+    console.log('lanca_ult_km' + lanca_ult_km)
+    console.log(media_abast_atual)
 
     const newData = {
         dataabast: document.getElementById("dataab").value + " " + document.getElementById("horaab").value,
@@ -72,7 +83,7 @@ function cadastroabastecimento() {
 
 
 
-
+    console.log(checkplacavei != "", checkdataabast.length == 16, checkkmatual != "" , checklitros != "" , checkvalorabast != "" , checklitros > 0 , media_abast_atual < 10 , media_abast_atual > 0 , checktipoabast != "")
     if(checkplacavei != "" && checkdataabast.length == 16  && checkkmatual != "" && checklitros != "" && checkvalorabast != "" && checklitros > 0 && media_abast_atual < 10 && media_abast_atual > 0 && checktipoabast != "") {
         
         firebase
@@ -328,22 +339,84 @@ function listarabastecimentos() {
 }
 
 
-// MOVER MOUSE PARA KM ANTERIOR 
-
-
 
 
 function ultimokm(){
-    var placavei2 = document.getElementById("placavei").value.toUpperCase();
+
+    ultimokm2(function(ultimovalor) {    
     
+
+    return ultimovalor
+  });
+  
+  
+}
+
+
+function ultimokm2(callback){
+
+    var placavei2 = document.getElementById("placavei").value.toUpperCase();
+    var kilometragem = []
+    var placaveiculo = ''
+    var addDiv2 = document.createElement('div');
+    addDiv2.className = "row";
+    addDiv2.id = 'divkmanterior'
 
     firebase
         .database()
         .ref("abastecimentos/")
-        .orderByChild('placavei')
+        .orderByChild('kmatual')
+        .on("value", function (snapshot) {
+            
+            document.getElementById("kmanterior").innerHTML = "";
+            snapshot.forEach(function (childSnapshot) {
+                var key = childSnapshot.key;
+                var childData = childSnapshot.val();
+
+                     
+                var placavei2 = document.getElementById("placavei").value.toUpperCase();
+                            
+    
+                if (childData.placavei == placavei2) {
+                    kilometragem.push(childData.kmatual)
+                    placaveiculo = childData.placavei
+
+                }    
+            })
+
+
+            document.getElementById("kmanterior").appendChild(addDiv2);
+            var kmatualdig = document.getElementById('kmatual').value
+            if ((kilometragem.slice(-1)[0]) == undefined || placaveiculo == ''){
+                
+                addDiv2.style.backgroundColor = "firebrick";
+                addDiv2.innerHTML = `A placa ${placavei2} não possui abastecimentos lançados.`
+
+            }else {
+                document.getElementById('inpkmanterior').value = kilometragem.slice(-1)[0]
+                addDiv2.innerHTML = `O KM Anterior da placa ${placaveiculo} é ${kilometragem.slice(-1)[0]}.`
+            }
+
+            
+
+            callback(kilometragem.slice(-1)[0]);
+        })
+    
+    
+}
+
+function ultimokm3(){
+
+    
+
+
+    firebase
+        .database()
+        .ref("abastecimentos/")
+        .orderByChild('kmatual')
         // .startAt("2023-01-01 00:00")
         // .endAt("2023-01-31 23:59")
-        .equalTo(placavei2)
+        
         .limitToLast(10)
         
         .on("value", function (snapshot) {
@@ -536,6 +609,7 @@ function mostrarmedia2(){
     getdivkmanterior.appendChild(divmostramedia);
 
     if(placaveim2 != "") {
+
         if (kmanteriorm2 == "" || kmanteriorm2 == 0){
 
             window.alert('[ERRO] Digite o KM Anterior ! ')
@@ -959,40 +1033,35 @@ function mostrardatarefer() {
 }
 function listaabastdaplaca(){
 
-    var date = new Date();
-    var monthStartDay = new Date(date.getFullYear(), date.getMonth(), 1).getDate()
-    var monthEndDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()
-    
+
     
    
     
 
     var count = 0;
-    // restauramenu()
-    document.getElementById("listaabast").innerHTML = "";
+    
+
     firebase
         .database()
         .ref("abastecimentos/")
         .orderByChild('dataabast')
         .on("value", function (snapshot) {
             
-            
+            document.getElementById("listaabast").innerHTML = "";
             snapshot.forEach(function (childSnapshot) {
 
-
+                
                 var key = childSnapshot.key;
                 var childData = childSnapshot.val();
-
-
                 let addDiv = document.createElement('div');
                 let datadoabast = childData.dataabast.slice(8, 10) + '/' + childData.dataabast.slice(5, 7) + '/' + childData.dataabast.slice(0, 4) + ' ' + childData.dataabast.slice(11, 13) + ':' + childData.dataabast.slice(14, 17);
                 var totalKmRodado = childData.kmatual-childData.kmanterior;
                 var placateste = childData.placavei
-                
+                var placa = childData.placavei
+                var mes = childData.dataabast.slice(5, 7) + '-' + childData.dataabast.slice(0, 4)
 
                 var totaldekm = 0;
                 var totaldelitros = 0;
-
                 
                 Promise.all([somaKmPorPlaca(placateste), somalitrosporplaca(placateste),somakmdescontado(placateste)])
                     .then(function([somakm, somalitros, somakmdesc]) {
@@ -1000,16 +1069,12 @@ function listaabastdaplaca(){
                         totaldelitros = somalitros[childData.placavei];
                         totaldekmdesc = somakmdesc[childData.placavei];
                         var mediamensal1 = (totaldekm - totaldekmdesc)/ (totaldelitros-(totaldekmdesc/5));
-                        var placa = childData.placavei;
-                        var data = childData.dataabast;
-                        var placadigitada = document.getElementById('placavei').value;
-
-                        
-
+                        var placa = childData.placavei
+                        var data = childData.dataabast
                         addDiv.className = "row";
                         count++;
                         var sugestaokmant = 0
-
+                        
                         if (buscarKmAnterior(placa, data) == null) {
 
                             sugestaokmant = childData.kmanterior
@@ -1021,12 +1086,39 @@ function listaabastdaplaca(){
 
                         }
                         
-                        if (placa == placadigitada){
+                        var placaveiculo = document.querySelector('input#placavei').value
 
-                            if ((sugestaokmant - childData.kmanterior) == 0 ){
+                        
+                        if (placaveiculo == childData.placavei){ 
 
-                            
-                                addDiv.innerHTML = `
+                            if ((sugestaokmant - childData.kmanterior) == 0){
+                                returnmediasolicitada(placa, mes)
+                                .then(function(mediasolplaca){
+
+                                    
+                                    var mediadoabastec = (((childData.kmatual-childData.kmanterior-childData.kmdescontado))/(childData.litros-(childData.kmdescontado/5))).toFixed(2)
+                                    var colmediaabastec = 'colmediaabastec'
+                                    var colmediamensal = 'colmediamensal'
+                                    if (mediadoabastec < Number(mediasolplaca)){
+                                        
+                                        var colmediaabastec = 'colmediaabastecred'
+
+                                    }
+                                    
+                                    if (mediamensal1 < Number(mediasolplaca)){
+
+                                        var colmediamensal = 'colmediamensalred'
+
+                                    }
+                                    
+
+                                
+
+
+                                        
+                                
+
+                                    addDiv.innerHTML = `
                                     <table id='tablelistaabast'>
                                         <tr> 
                                             <td class="coldataabas">${datadoabast}</td>        
@@ -1034,12 +1126,15 @@ function listaabastdaplaca(){
                                             <td class="colkmanterior">${childData.kmanterior}</td> 
                                             <td class="colkmatual">${childData.kmatual}</td>
                                             <td class="colkmrodado">${totalKmRodado}</td>  
-                                            <td class="collitros">${childData.litros}</td>
+                                            <td class="collitros">${(Number(childData.litros)).toFixed(2)}</td>
                                             <td class="colvalorabastec">R$ ${(Number(childData.valorabastec)).toFixed(2)}</td>
-                                            <td class="colmediaabastec">${(((childData.kmatual-childData.kmanterior-childData.kmdescontado))/(childData.litros-(childData.kmdescontado/5))).toFixed(2)}</td>                        
-                                            <td class="colmediamensal">${mediamensal1.toFixed(2)}</td>
+                                            <td class="${colmediaabastec}"> ${mediadoabastec}</td>                        
+                                            <td class="${colmediamensal}">${mediamensal1.toFixed(2)}</td>
+                                            <td class="colmediasolicitada">${mediasolplaca}</td>
                                             <td class="coltipoabast">${childData.tipoabast}</td>
-                                            <td class="colmediamensal">${childData.kmdescontado}</td>
+                                            <td class="colkmdescontado">${childData.kmdescontado}</td>
+                                            
+                                            
                                             
                                         
                 
@@ -1049,11 +1144,13 @@ function listaabastdaplaca(){
                                             </td> 
                                             
                                         </tr>
-                                    </table>`  
-                                    
-                            }else{
+                                    </table>`
 
-                                addDiv.innerHTML = `
+                                    })  
+
+                                }else{
+
+                                    addDiv.innerHTML = `
                                     <table id='tablelistaabast'>
                                     <tr style = 'background-color: lightpink;color: black;'>  
                                             <td class="coldataabas">${datadoabast}</td>        
@@ -1063,10 +1160,11 @@ function listaabastdaplaca(){
                                             <td class="colkmrodado">${totalKmRodado}</td>  
                                             <td class="collitros">${childData.litros}</td>
                                             <td class="colvalorabastec">R$ ${(Number(childData.valorabastec)).toFixed(2)}</td>
-                                            <td class="colmediaabastec">${(((childData.kmatual-childData.kmanterior-childData.kmdescontado))/(childData.litros-(childData.kmdescontado/5))).toFixed(2)}</td>                        
-                                            <td class="colmediamensal">${mediamensal1.toFixed(2)}</td>
+                                            <td class="${coluna}">${mediadoabastec}</td>                        
+                                            <td class="${colmediamensal}">${mediamensal1.toFixed(2)}</td>
+                                            <td class="colmediasolicitada">${mediasolplaca}</td>
                                             <td class="coltipoabast">${childData.tipoabast}</td>
-                                            <td class="colmediamensal">${childData.kmdescontado}</td>
+                                            <td class="colkmdescontado">${childData.kmdescontado}</td>
                                             <td class="colsugestaokm">${sugestaokmant}</td>
                                             
                                         
@@ -1077,18 +1175,18 @@ function listaabastdaplaca(){
                                             </td> 
                                             
                                         </tr>
-                                    </table>`  
+                                    </table>` 
 
 
-                            }
-                            document.getElementById("listaabast").appendChild(addDiv);
+                                }    
                         }
-                        
+                        document.getElementById("listaabast").appendChild(addDiv);
 
                     });
             });
         });
 }
+
 
 function limparcampos() {
     var elements = document.getElementsByTagName("input");
@@ -1534,7 +1632,7 @@ function returnmediasolicitadabackup(placa, mes) {
 
 
     })
-    console.log(`Á media solic. da placa ${placa} do mês ${mes} é ${mediasolplaca}`)
+    
     return mediasolplaca
 
 
@@ -1558,7 +1656,7 @@ function returnmediasolicitada(placa, mes) {
         });
     })
       .then(function(mediasolplaca) {
-        console.log(`Á media solic. da placa ${placa} do mês ${mes} é ${mediasolplaca}`);
+        
         return mediasolplaca;
       })
       .catch(function(error) {
