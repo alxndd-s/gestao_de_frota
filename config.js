@@ -11,7 +11,8 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 
-// Create a new data
+
+
 var lanca_ult_km = 0
 var litrosabast = 0
 var kmatualdig2 = 0
@@ -34,18 +35,20 @@ function cadastroabastecimento() {
     var checkvalorabast= document.getElementById('valorabastec').value
     var checktipoabast = document.getElementById('tipoabast').value
     console.log(checkdataabast, checkplacavei,checkkmatual,checklitros,checkvalorabast,checkvalorabast,checktipoabast)
+    
     // os campos acima vao pegar os valores digitados nos campos e fazer uma validação 
 
     
 
     litrosabast = checklitros
+
     kmatualdig2 = checkkmatual
 
     lanca_ult_km = ultimokm()
+    //chama a funcao e pega o ultimo km, se nao tiver, será resolvido na condicao abaixo 
 
     media_abast_atual = (checkkmatual-Number(lanca_ult_km))/checklitros
-    console.log('lanca_ult_km' + lanca_ult_km)
-    console.log(media_abast_atual)
+
 
 
     
@@ -53,15 +56,16 @@ function cadastroabastecimento() {
 
     
     if (lanca_ult_km == 0 || lanca_ult_km == undefined){
-        // se o km anterior do veiculo for '0' voce tera que inserior o primeiro manuamente
+
+        // se o km anterior do veiculo for '0' ou 'undefined' voce tera que inserior o primeiro manuamente
+
         lanca_ult_km = document.getElementById('inpkmanterior').value
         
         media_abast_atual = (checkkmatual-Number(lanca_ult_km))/checklitros
 
+
     }
 
-    console.log('lanca_ult_km' + lanca_ult_km)
-    console.log(media_abast_atual)
 
     const newData = {
         dataabast: document.getElementById("dataab").value + " " + document.getElementById("horaab").value,
@@ -83,9 +87,10 @@ function cadastroabastecimento() {
 
 
 
-    console.log(checkplacavei != "", checkdataabast.length == 16, checkkmatual != "" , checklitros != "" , checkvalorabast != "" , checklitros > 0 , media_abast_atual < 10 , media_abast_atual > 0 , checktipoabast != "")
+    
     if(checkplacavei != "" && checkdataabast.length == 16  && checkkmatual != "" && checklitros != "" && checkvalorabast != "" && checklitros > 0 && media_abast_atual < 10 && media_abast_atual > 0 && checktipoabast != "") {
-        
+        // irá fazer a checagem se a data está digitada correta e os campos estao preenchidos e a media nao esta com uma discrepancia muito grande 
+
         firebase
             .database()
             .ref("abastecimentos/")
@@ -95,10 +100,14 @@ function cadastroabastecimento() {
         media_abast_atual = 0
         litrosabast = 0
 
-        limparcampos()
+        
+
         document.getElementById('kmanterior').innerHTML = ""
         document.getElementById("listaabast").innerHTML = "";
-        listarabastecimentos()
+
+        
+        limparcampos()
+        // essa funcao limpa os campos de input
 
     }else if (checkdataabast.length < 16) {
         
@@ -109,6 +118,11 @@ function cadastroabastecimento() {
 
         
         window.alert('[ERRO] Conferir Dados, média alta!')
+
+    }else if (media_abast_atual < 0) {
+
+        
+        window.alert('[ERRO] Conferir Dados, média negativa!')
 
     }else if (media_abast_atual == 0) {
         
@@ -126,88 +140,24 @@ function cadastroabastecimento() {
 
 
 
-
-function backuplistarabastecimentos(){
-    var count = 0
-    var kmrodadomensal = 0
-    var litrosmensal = 0
-    
-    firebase
-        .database()
-        .ref("abastecimentos/")
-        .orderByChild('dataabast')
-        // .startAt("2023-01-01 00:00")
-        // .endAt("2023-01-31 23:59")
-        // .limitToLast(1)
-        .on("value", function (snapshot) {
-
-            document.getElementById("listaabast").innerHTML = "";
-            snapshot.forEach(function (childSnapshot) {
-                var key = childSnapshot.key;
-                var childData = childSnapshot.val();
-                let addDiv = document.createElement('div');
-                let datadoabast =  childData.dataabast.slice(8,10)+'/' //data
-                +childData.dataabast.slice(5,7)+'/'            //data
-                +childData.dataabast.slice(0,4)+' '            //data
-                +childData.dataabast.slice(11,13)+':'          //data
-                +childData.dataabast.slice(14,17);
-
-                
-                
-                var mediamensal = kmrodadomensal/litrosmensal
-                
-
-                addDiv.className = "row";
-                count ++
-                
-                addDiv.innerHTML = `
-                    <table id = 'tablelistaabast'>
-                    
-                    <tr> 
-                        <td class= "coldataabas"><input class= "coldataabas" type = 'text' value = '${datadoabast}' ></input></td>        
-                        <td id = '${"placanum" + count}' value='${key}' class= "colplacavei">${childData.placavei}</td> 
-                        <td class= "colkmanterior">${childData.kmanterior}</td> 
-                        <td class= "colkmatual">${childData.kmatual}</td>
-                        <td class= "colkmrodado">${childData.kmrodado}</td>  
-                        <td class= "collitros">${childData.litros}</td>
-                        <td class="colvalorabastec">${childData.valorabastec}</td>
-                        <td class="colmediaabastec">${((childData.kmatual-childData.kmanterior)/childData.litros).toFixed(2)}</td>                        
-                        <td class="coltipoabast">${childData.tipoabast}</td>
-                        <td>${'<button type="button" class="btn btn-info" onclick="atualizardados()">Upd.</button><button type="button" class="btn btn-danger" onclick="deleteData()">Del.</button></div>'}</td> 
-                    </tr>
-                    </table>`   
-                document.getElementById("listaabast").appendChild(addDiv);
-                
-                
-            });
-                
-    });
-
-    
-}
-
-
-
-
-
-
-
-
-
 function listarabastecimentos() {
 
-
+    // esta funcao irá listar todos os abastecimentos 
     
-   
     
-
     var count = 0;
+
     restauramenu()
+
+    // esta funcao restaura o menu depois de atualizar algum abastecimento 
+
+    
 
     firebase
         .database()
         .ref("abastecimentos/")
         .orderByChild('dataabast')
+        
         .on("value", function (snapshot) {
             
             document.getElementById("listaabast").innerHTML = "";
@@ -219,14 +169,14 @@ function listarabastecimentos() {
                 let addDiv = document.createElement('div');
                 let datadoabast = childData.dataabast.slice(8, 10) + '/' + childData.dataabast.slice(5, 7) + '/' + childData.dataabast.slice(0, 4) + ' ' + childData.dataabast.slice(11, 13) + ':' + childData.dataabast.slice(14, 17);
                 var totalKmRodado = childData.kmatual-childData.kmanterior;
-                var placateste = childData.placavei
+                var placavei = childData.placavei
                 var placa = childData.placavei
                 var mes = childData.dataabast.slice(5, 7) + '-' + childData.dataabast.slice(0, 4)
 
                 var totaldekm = 0;
                 var totaldelitros = 0;
                 
-                Promise.all([somaKmPorPlaca(placateste), somalitrosporplaca(placateste),somakmdescontado(placateste)])
+                Promise.all([somaKmPorPlaca(placavei), somalitrosporplaca(placavei),somakmdescontado(placavei)])
                     .then(function([somakm, somalitros, somakmdesc]) {
                         totaldekm = somakm[childData.placavei];
                         totaldelitros = somalitros[childData.placavei];
@@ -301,6 +251,8 @@ function listarabastecimentos() {
 
                             }else{
 
+                                //se o km estiver com alguma discrepancia, irá sugerir o km na ultima coluna 
+
                                 addDiv.innerHTML = `
                                 <table id='tablelistaabast'>
                                 <tr style = 'background-color: lightpink;color: black;'>  
@@ -342,7 +294,7 @@ function listarabastecimentos() {
 
 
 function ultimokm(){
-
+    //esta funcao chama a outra funcao que verifica o ultimo km
     ultimokm2(function(ultimovalor) {    
     
 
@@ -405,192 +357,15 @@ function ultimokm2(callback){
     
 }
 
-function ultimokm3(){
 
-    
-
-
-    firebase
-        .database()
-        .ref("abastecimentos/")
-        .orderByChild('kmatual')
-        // .startAt("2023-01-01 00:00")
-        // .endAt("2023-01-31 23:59")
-        
-        .limitToLast(10)
-        
-        .on("value", function (snapshot) {
-            
-            document.getElementById("kmanterior").innerHTML = "";
-            snapshot.forEach(function (childSnapshot) {
-                var key = childSnapshot.key;
-                var childData = childSnapshot.val();
-                var addDiv2 = document.createElement('div');
-                addDiv2.className = "row";
-                addDiv2.id = 'divkmanterior'
-                     
-                let placavei2 = document.getElementById("placavei").value.toUpperCase();
-                
-
-                if (childData.placavei == placavei2) {
-                    document.getElementById("kmanterior").appendChild(addDiv2);
-                    var kmatualdig = document.getElementById('kmatual').value
-                    
-                    addDiv2.innerHTML = `O KM Anterior da placa ${childData.placavei} é ${childData.kmatual}.`
-                    lanca_ult_km = childData.kmatual
-                    
-                    var testes1 = document.querySelector("input#inpkmanterior")
-                    testes1.value = lanca_ult_km
-                                    
-                
-                }    
-
-            })
-
-        
-        })
-        
-}
 // km carreg - km vazio - % carregado - suj km vazio - trajetos - km a descontar - link brasiltrack  
-function mediabackup(){
-    
-    
-    var checklitros= document.getElementById('litrosabast').value
-
-    if(!document.getElementById('coldataabas')) {
-        
-        mostrarmedia2()
-
-    }
 
 
 
-
-    
-
-
-    firebase
-        .database()
-        .ref("abastecimentos/")
-        .orderByChild('dataabast')
-        // .startAt("2023-01-01 00:00")
-        // .endAt("2023-01-31 23:59")
-        // .limitToLast(10)  
-        .on("value", function (snapshot) {
-
-
-            document.getElementById("kmanterior").innerHTML = "";
-            snapshot.forEach(function (childSnapshot) {
-                var key = childSnapshot.key;
-                var childData = childSnapshot.val();
-                var addDiv2 = document.createElement('div');
-                addDiv2.className = "row";
-                addDiv2.id = 'divkmanterior';
-                document.getElementById("kmanterior").innerHTML = "";
-                let placavei2 = document.getElementById("placavei").value.toUpperCase();
-                
-                if (childData.placavei == placavei2) {
-                    document.getElementById("mostramedia2").append(addDiv2);
-                    var kmatualdig = document.getElementById('kmatual').value;
-                    var litrosdig = document.getElementById('litrosabast').value;
-                    var teste = document.querySelectorAll('div#divkmanterior')
-
-                    if (((kmatualdig - childData.kmatual)/litrosdig) < 0 && checklitros > 0) {
-                        document.getElementById('save_btn').disabled = true;
-                        
-                        addDiv2.innerHTML = '[KM INCORRETO] - Média com valor negativo'
-                        
-                    }else{   
-                        document.getElementById('save_btn').disabled = false;
-                       
-
-                        addDiv2.innerHTML = `O KM Anterior da placa ${childData.placavei} é ${childData.kmatual}. [MÉDIA] ${((kmatualdig - childData.kmatual)/litrosdig).toFixed(2)}`
-
-                    }    
-                                    
-
-                }    
-
-
-
-            });
-     
-            
-            
-        })
-        
-}
-
-function mostrarmediaa(){
-    
-    
-    var checklitros= document.getElementById('litrosabast').value
-
-    if(!document.getElementById('coldataabas')) {
-        
-        mostrarmedia2()
-
-    }
-
-
-
-
-    
-
-
-    firebase
-        .database()
-        .ref("abastecimentos/")
-        .orderByChild('dataabast')
-        // .startAt("2023-01-01 00:00")
-        // .endAt("2023-01-31 23:59")
-        // .limitToLast(10)  
-        .on("value", function (snapshot) {
-
-
-            document.getElementById("kmanterior").innerHTML = "";
-            snapshot.forEach(function (childSnapshot) {
-                var key = childSnapshot.key;
-                var childData = childSnapshot.val();
-                var addDiv2 = document.createElement('div');
-                addDiv2.className = "row";
-                addDiv2.id = 'divkmanterior';
-                document.getElementById("kmanterior").innerHTML = "";
-                let placavei2 = document.getElementById("placavei").value.toUpperCase();
-                
-                if (childData.placavei == placavei2) {
-                    document.getElementById("mostramedia2").append(addDiv2);
-                    var kmatualdig = document.getElementById('kmatual').value;
-                    var litrosdig = document.getElementById('litrosabast').value;
-                    var teste = document.querySelectorAll('div#divkmanterior')
-
-                    if (((kmatualdig - childData.kmatual)/litrosdig) < 0 && checklitros > 0) {
-                        document.getElementById('save_btn').disabled = true;
-                        
-                        addDiv2.innerHTML = '[KM INCORRETO] - Média com valor negativo'
-                        
-                    }else{   
-                        document.getElementById('save_btn').disabled = false;
-                       
-
-                        addDiv2.innerHTML = `O KM Anterior da placa ${childData.placavei} é ${childData.kmatual}. [MÉDIA] ${((kmatualdig - childData.kmatual)/litrosdig).toFixed(2)}`
-
-                    }    
-                                    
-
-                }    
-
-
-
-            });
-     
-            
-            
-        })
-        
-}
 
 function mostrarmedia2(){
+
+    //esta funcao irá mostrar a media do abastecimento atual no momento do lancamento
 
     var getdivkmanterior = document.getElementById('kmanterior');
     var getdivkmant = document.getElementById('mostramedia2');
@@ -613,6 +388,7 @@ function mostrarmedia2(){
         if (kmanteriorm2 == "" || kmanteriorm2 == 0){
 
             window.alert('[ERRO] Digite o KM Anterior ! ')
+
             kmanteriorm3.focus()
             
         }else{
@@ -641,6 +417,7 @@ function mostrarmedia2(){
 
 function cadastrarveiculo() {
 
+    // funcao usada para cadastrar veiculo com uma checagem de duplicidade de placa
     
     
     var checkplaca= document.getElementById("placavei").value
@@ -689,6 +466,9 @@ function cadastrarveiculo() {
 }
     
 function criarselecao(){
+
+    //esta funcao cria um select com as opcoes de cada marca de veiculo com a listagem de modelos 
+
     const selecmarca = document.getElementById('marcavei');
     const selecmodelo = document.getElementById('modelovei');
 
@@ -748,6 +528,8 @@ function criarselecao(){
 }
 
 function listarveiculos(){
+    // a funcao seguinte lista todos os veiculos cadastrados
+
     firebase
         .database()
         .ref("veiculos/")        
@@ -784,6 +566,9 @@ function listarveiculos(){
 }
 
 function listaplacas(){
+
+    // esta funcao é usa no search de placas, para sugerir as placas já cadastradas .
+
     const createdatalist = document.createElement('datalist');
     createdatalist.id = "listadeplacas";
     
@@ -812,6 +597,10 @@ function listaplacas(){
 
 
 function mediasolicitada(){
+
+    // essa funcao irá listar todos os veiculos como sugestao de cadastro de media
+
+
     let divmediasol = document.getElementById('listamediasol');
     divmediasol.innerHTML = ""
 
@@ -837,6 +626,7 @@ function mediasolicitada(){
 
 
                 if (childData.placavei != "OPM8J51" && childData.placavei != "OQC0C33"){
+                    // se o veiculo for alguma das placas acima sera bi cacamba se nao rodotrem
                     divmediasol.innerHTML += `
                     <table>
                     <tr>                       
@@ -875,109 +665,28 @@ function mediasolicitada(){
 
 
 }
-function cadastrarmediasbackup06032023(){
-    
-    var table = document.querySelectorAll('td#colplacavei');
-
-    for (var i = 0; i < table.length; i++) {
-        var inputs = table[i].innerHTML
-        var datareferencia = document.querySelectorAll('input#datarefer')[i].value
-        
-        const mediasolicitada = {
-
-            placavei: document.querySelectorAll('td#colplacavei')[i].innerHTML,
-            mediasol: document.querySelectorAll('input#vlmediasol')[i].value,
-            tipoveiculo: document.querySelectorAll('td#coltipovei')[i].innerHTML,
-            datarefer: datareferencia,
-
-        };
-
-        let database = firebase.database();
-        let dataRetrieved = database.ref('mediasolicitada/').orderByChild("datarefer").equalTo(datareferencia);
-        dataRetrieved.on('value', function(snapshot) {
-
-            if(snapshot.exists()){
-
-            window.alert(`Média da referencia ${datareferencia} já cadastrada`)
-
-            }else{
-
-                firebase
-            
-                    .database()
-                    .ref(`mediasolicitada/`)                    
-                    .push(mediasolicitada);
-            }
-
-    
-        })
-    }
-        
-
-}
-
-
-function cadastrarmedias2(){
-    
-    var checkdatarefer = document.querySelector('input#datarefer3').value
-    var table = document.querySelectorAll('td#colplacavei');
-
-    let database = firebase.database();
-
-    let dataRetrieved = database.ref('mediasolicitada/').orderByChild("datarefer").equalTo(checkdatarefer);
-    dataRetrieved.on('value', function(snapshot) {
-
-        if(snapshot.exists()){
-
-            window.alert(`Média da referencia ${checkdatarefer} já cadastrada`)
-
-        }else{
-
-            for (var i = 0; i < table.length; i++) {
-                var inputs = table[i].innerHTML
-                var datareferencia = document.querySelectorAll('input#datarefer')[i].value
-                
-                const mediasolicitada = {
-        
-                    placavei: document.querySelectorAll('td#colplacavei')[i].innerHTML,
-                    mediasol: document.querySelectorAll('input#vlmediasol')[i].value,
-                    tipoveiculo: document.querySelectorAll('td#coltipovei')[i].innerHTML,
-                    datarefer: datareferencia,
-        
-                };
-                firebase
-            
-                    .database()
-                    .ref(`mediasolicitada/`)                    
-                    .push(mediasolicitada);
-            }
-    
-    
-        }
-    
-    
-    
 
 
 
-
-    
-    })
-}
         
 
 
 function cadastrarmedias() {
 
+    // para cada veiculo irá cadastrar uma media solicitada no mes de referencia 
+
     var checkdatarefer = document.querySelector('input#datarefer3').value;
+
     var table = document.querySelectorAll('td#colplacavei');
 
     let database = firebase.database();
 
     let dataRetrieved = database.ref(`mediasolicitada/`);
+
     dataRetrieved.once('value', function(snapshot) {
         
         if (!snapshot.hasChild(checkdatarefer)) {
+
             //irá verificar se não existe uma child com a data de referencia, se nao cadastra as medias
             
             for (var i = 0; i < table.length; i++) {
@@ -1003,6 +712,7 @@ function cadastrarmedias() {
                 
             
         } else {
+
             window.alert(`[ERRO] - Média Solicitada da referência ${checkdatarefer} já cadastrada`)
                
 
@@ -1012,7 +722,7 @@ function cadastrarmedias() {
 }
 
 function mostrardatarefer() {
-
+    // esta funcao mostra na aba media solicitada o mes atual
     // Obter a data atual
     const dataAtual = new Date();
 
@@ -1031,9 +741,11 @@ function mostrardatarefer() {
 
 
 }
+
+
 function listaabastdaplaca(){
 
-
+    // esta funcao é basicamente a mesma da lista de abastecimento total porem irá filtrar por placa digitada 
     
    
     
@@ -1056,14 +768,14 @@ function listaabastdaplaca(){
                 let addDiv = document.createElement('div');
                 let datadoabast = childData.dataabast.slice(8, 10) + '/' + childData.dataabast.slice(5, 7) + '/' + childData.dataabast.slice(0, 4) + ' ' + childData.dataabast.slice(11, 13) + ':' + childData.dataabast.slice(14, 17);
                 var totalKmRodado = childData.kmatual-childData.kmanterior;
-                var placateste = childData.placavei
+                var placavei = childData.placavei
                 var placa = childData.placavei
                 var mes = childData.dataabast.slice(5, 7) + '-' + childData.dataabast.slice(0, 4)
 
                 var totaldekm = 0;
                 var totaldelitros = 0;
                 
-                Promise.all([somaKmPorPlaca(placateste), somalitrosporplaca(placateste),somakmdescontado(placateste)])
+                Promise.all([somaKmPorPlaca(placavei), somalitrosporplaca(placavei),somakmdescontado(placavei)])
                     .then(function([somakm, somalitros, somakmdesc]) {
                         totaldekm = somakm[childData.placavei];
                         totaldelitros = somalitros[childData.placavei];
@@ -1189,6 +901,9 @@ function listaabastdaplaca(){
 
 
 function limparcampos() {
+
+    // esta funcao limpa todos os campos input 
+
     var elements = document.getElementsByTagName("input");
     for(var i = 0; i < elements.length; i++){
         
@@ -1204,6 +919,12 @@ function limparcampos() {
 
 
 function atualizardados(btn){
+
+    // esta funcao é o inicio de 3 etapas para editar um abastecimento . 
+    // quando a mesma é chamada irá inputar nos campos input os valores do abastecimento selecionado junto com eles o id gerado no firebase
+    // depois é chamado outra funcao que irá preencher os dados conforme o id do firebase 
+    // por final irá ser feita uma confirmação e atualizar os dados
+    
 
     let getbotoes = document.querySelector('div#botoescadelist');
     let getinputboxes = document.querySelector('div#inputboxes');
@@ -1362,71 +1083,12 @@ function confirmaatualizacao() {
 
 }
 
-function backupdeatualizardados(btn){
 
 
-    limparcampos();
-    
-    let dataabast = document.getElementById("dataab")
-    let horaab = document.getElementById("horaab")
-    let placavei = document.getElementById("placavei")
-    let kmanterior = document.getElementById("inpkmanterior")
-    let kmatual = document.getElementById("kmatual")
-    let litros = document.getElementById('litrosabast')
-    let valorabastec = document.getElementById('valorabastec')
-    let tipoabast = document.getElementById('tipoabast')
+function somaKmPorPlaca(placavei) {
 
+    // soma todos os kms rodados por placa 
 
-
-    var teste = btn.parentNode.parentNode.querySelector(".coldataabas input.coldataabas").innerHTML;
-    
-    var getdataparaatt = btn.parentNode.parentNode.querySelector(".coldataabas input.coldataabas").getAttribute("value");
-
-   
-    var convertdate = getdataparaatt.slice(6,10) + '-' +  getdataparaatt.slice(3,5) + '-' +  getdataparaatt.slice(0,2) + ' ' +  getdataparaatt.slice(11,13) + ':' + getdataparaatt.slice(14,16)
-    
-    //2023-02-01 15:15
-    //01/02/2023 00:15
-
-    // obter o ID do registro a partir do botão clicado
-    var idRegistro = btn.parentNode.parentNode.querySelector(".colplacavei").getAttribute("value");
-    
-    // obter a referência do registro no Firebase
-    var refRegistro = firebase.database().ref("abastecimentos/" + idRegistro);
-    
-    
-    refRegistro.update({
-        dataabast: convertdate
-    });
-      
-      
-
-
-    
-
-
-    // firebase
-    //     .database()
-    //     .ref("abastecimentos/")
-    //     .child()
-    //     // .startAt("2023-01-01 00:00")
-    //     // .endAt("2023-01-31 23:59")
-    //     // .limitToLast(1)
-    //     .on("value", function (snapshot) {
-
-    //         document.getElementById("listaabast").innerHTML = "";
-    //         snapshot.forEach(function (childSnapshot) {
-    //             var key = childSnapshot.key;
-    //             var childData = childSnapshot.val();
-
-
-    //         });
-                    
-    // });
-
-}
-
-function somaKmPorPlaca(placateste) {
     return new Promise(function(resolve, reject) {
       
       firebase
@@ -1438,12 +1100,12 @@ function somaKmPorPlaca(placateste) {
           
           snapshot.forEach(function (abastecimentos) {
             var abastecimento = abastecimentos.val();
-            if (abastecimento.placavei === placateste) {
-              if (placateste in somakm) {
-                somakm[placateste] += Number(abastecimento.kmrodado);
+            if (abastecimento.placavei === placavei) {
+              if (placavei in somakm) {
+                somakm[placavei] += Number(abastecimento.kmrodado);
                 
               } else {
-                somakm[placateste] = Number(abastecimento.kmrodado);
+                somakm[placavei] = Number(abastecimento.kmrodado);
                 
               }
               
@@ -1457,8 +1119,13 @@ function somaKmPorPlaca(placateste) {
       
     });
   }
+
+
+
   
-  function somakmdescontado(placateste) {
+  function somakmdescontado(placavei) {
+    // soma todos os kms descontados por placa 
+
     return new Promise(function(resolve, reject) {
       
       firebase
@@ -1470,12 +1137,12 @@ function somaKmPorPlaca(placateste) {
           
           snapshot.forEach(function (abastecimentos) {
             var abastecimento = abastecimentos.val();
-            if (abastecimento.placavei === placateste) {
-              if (placateste in somakmdesc) {
-                somakmdesc[placateste] += Number(abastecimento.kmdescontado);
+            if (abastecimento.placavei === placavei) {
+              if (placavei in somakmdesc) {
+                somakmdesc[placavei] += Number(abastecimento.kmdescontado);
                 
               } else {
-                somakmdesc[placateste] = Number(abastecimento.kmdescontado);
+                somakmdesc[placavei] = Number(abastecimento.kmdescontado);
                 
               }
               
@@ -1491,7 +1158,8 @@ function somaKmPorPlaca(placateste) {
   }
 
 
-  function somalitrosporplaca(placateste) {
+  function somalitrosporplaca(placavei) {
+    // soma todos os litros por placa 
     return new Promise(function(resolve, reject) {
       
       firebase
@@ -1503,13 +1171,13 @@ function somaKmPorPlaca(placateste) {
           var somalitros = {};
           snapshot.forEach(function (abastecimentos) {
             var abastecimento = abastecimentos.val();
-            if (abastecimento.placavei === placateste) {
-              if (placateste in somalitros) {
+            if (abastecimento.placavei === placavei) {
+              if (placavei in somalitros) {
                 
-                somalitros[placateste] += Number(abastecimento.litros);
+                somalitros[placavei] += Number(abastecimento.litros);
               } else {
                 
-                somalitros[placateste] = Number(abastecimento.litros);
+                somalitros[placavei] = Number(abastecimento.litros);
               }
               
             }
@@ -1524,6 +1192,7 @@ function somaKmPorPlaca(placateste) {
   }
 
 function restauramenu(){
+    // restaura o menu inicial apos uma atualizacao de abastecimento
 
     document.querySelector('form#inputoriginal').innerHTML = `                <div id ="headinputboxes1"></div>
     <table id ="headinputboxes1">
@@ -1570,6 +1239,7 @@ function restauramenu(){
 
 
 function buscarKmAnterior(placa, data) {
+    // busca o km anterior conforme placa e data anterior á data especificada 
     let penultimoAbastecimento = null;
     let ultimoAbastecimento = null;
     var teste = 0
@@ -1609,37 +1279,10 @@ function buscarKmAnterior(placa, data) {
   }
 
 
-function returnmediasolicitadabackup(placa, mes) {
-
-    var mediasolplaca = null
-    
-    firebase
-        .database()
-        .ref(`mediasolicitada/${mes}`)
-        
-        .once('value', function(snapshot) {
-        snapshot.forEach(function(childSnapshot) {
-            
-            const mediasolicitada = childSnapshot.val();
-            if (mediasolicitada.placavei == placa){
-                
-                mediasolplaca = mediasolicitada.mediasol
-
-            }
-
-
-        })
-
-
-    })
-    
-    return mediasolplaca
-
-
-}
 
 
 function returnmediasolicitada(placa, mes) {
+    // retorna a media solicitada cadastrada anteriormente e mostra na listagem de abastecimento .
     return new Promise(function(resolve, reject) {
       firebase
         .database()
