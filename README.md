@@ -1,5 +1,4 @@
 # Gestão de Frota
-Gestão de Frota
 Esse é um dos maiores projetos até o momento. Foi criado para sair do Excel que não suporta tanto fluxo de dados. Usando HTML, CSS e JavaScript, esse web-app está
 conectado a um banco de dados do Firebase. Nele é possivel fazer lançamentos dos abastecimentos, cadastro dos veiculos e cadastro de um parâmetro de media mensal 
 à ser atingida por aquele veiculo.
